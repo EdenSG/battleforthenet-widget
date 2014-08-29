@@ -35,6 +35,10 @@ body {
             box-shadow: none;
         }
     }
+    &:after {
+        content: url(../../images/envelope-hover.png), url(../../images/envelope.png), url(../../images/close.png), url(../../images/field-gradient.png); /* Preload images */ 
+        display: none;
+    }
 
     #overlay {
         background: transparent;
@@ -373,7 +377,7 @@ body {
         border-left: 0px;
         border-right: 1px solid @field_border_color;
         height: 43px;
-        line-height: 43px;
+        line-height: 19px;
         padding: 0px 20px;
         font-size: 16px;
         /*box-shadow: inset 1px 4px 9px -6px rgba(0,0, 0, .5);*/
@@ -439,6 +443,7 @@ body {
                 background-image: url(../../images/envelope-hover.png);
                 color: #72ad9f;
             }
+            
         }
 
         button {
