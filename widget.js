@@ -84,16 +84,16 @@ var _bftn_animations = {
 			modalAnimation: 'modal'
 		},
 
-		preload: [
-			'envelope.png',
-			'envelope-hover.png',
-			'field-gradient.png',
-			'check-on.png',
-			'check-off.png',
-			'check-on-big.png',
-			'check-off-big.png',
-			'close.png'
-		],
+		// preload: [
+		// 	'envelope.png',
+		// 	'envelope-hover.png',
+		// 	'field-gradient.png',
+		// 	'check-on.png',
+		// 	'check-off.png',
+		// 	'check-on-big.png',
+		// 	'check-off-big.png',
+		// 	'close.png'
+		// ],
 
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
@@ -133,7 +133,7 @@ var _bftn_animations = {
 			theme: 'light'
 		},
 
-		preload: [],
+		// preload: [],
 
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
@@ -338,8 +338,8 @@ var ready = function() {
 
 	var animation = _bftn_animations[_bftn_options.animation];
 
-	var images = new Array()
-	var preloaded = 0;
+	// var images = new Array()
+	// var preloaded = 0;
 
 	var beginAnimation = function() {
 		setTimeout(function() {
@@ -347,31 +347,31 @@ var ready = function() {
 		}, _bftn_options.delay);
 	}
 
-	if (typeof animation.preload != "undefined" && animation.preload.length)
-	{
-		for (i = 0; i < animation.preload.length; i++) {
+	// if (typeof animation.preload != "undefined" && animation.preload.length)
+	// {
+	// 	for (i = 0; i < animation.preload.length; i++) {
 
-			var src = animation.preload[i];
+	// 		var src = animation.preload[i];
 
-			images[i] = new Image()
-			images[i].src = _bftn_options.iframe_base_path+'/images/'+src;
-			images[i].onload = function() {
-				preloaded++;
-				_bftn_util.log('Preloaded ' + preloaded + ' images.');
-				if (preloaded == images.length)
-				{
-					_bftn_util.log('DONE PRELOADING IMAGES.')
-					_bftn_util.log('Animate in '+_bftn_options.delay+' ms');
+	// 		images[i] = new Image()
+	// 		images[i].src = _bftn_options.iframe_base_path+'/images/'+src;
+	// 		images[i].onload = function() {
+	// 			preloaded++;
+	// 			_bftn_util.log('Preloaded ' + preloaded + ' images.');
+	// 			if (preloaded == images.length)
+	// 			{
+	// 				_bftn_util.log('DONE PRELOADING IMAGES.')
+	// 				_bftn_util.log('Animate in '+_bftn_options.delay+' ms');
 
-					beginAnimation();
-				}
-			}
-		}
-	}
-	else	// no preload, just start the animation
-	{
+	// 				beginAnimation();
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// else	// no preload, just start the animation
+	// {
 		beginAnimation();
-	}
+	// }
 }
 
 // Wait for DOM content to load.
