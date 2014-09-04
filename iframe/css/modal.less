@@ -15,6 +15,8 @@
 @scene_top_padding: 60px;
 @scene_margin_top: -200px;
 
+@theme-hue: 300; // Default: 165 
+
 @headline_ellipsis_start_delay: 2s;
 @headline_ellipsis_delay_each: 1.5s;
 @headline_after_ellipsis_delay: 3s;
@@ -55,7 +57,7 @@ body {
     }
 
     #overlay {
-        background: transparent;
+        background: hsla(@theme-hue, 30%, 20%, 0.2);
     }
 }
 .clear {
@@ -117,7 +119,7 @@ body {
     box-sizing: border-box;
     padding: 25px;
     top: 0px;
-    background: #edfffb;
+    background: hsl(@theme-hue, 100%, 96%);
     border-radius: 100px;
     z-index: 9000;
     pointer-events: none;
@@ -129,7 +131,7 @@ body {
     &.zoomedOut {
         transition: all .75s ease-out;
 
-        box-shadow: 0 -11px 30px -12px rgba(0,0,0,.6);
+        // box-shadow: 0 -11px 30px -12px rgba(0,0,0,.6);
 
         &.notIE {
             transform: scale(.6);
@@ -152,7 +154,7 @@ body {
     box-sizing: border-box;
     z-index: 9001; /* OVER 9000! GET IT?! LOL */
     text-align: center;
-    color: #324e47;
+    color: hsl(@theme-hue, 22%, 25%);
     pointer-events: none;
 
     transform: translate3d(0,0,0);
@@ -217,10 +219,10 @@ body {
 
 #modal {
     position: static;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, .6);
+    box-shadow: 0 15px 20px -12px rgba(0,0,0,.6);
     width: 700px;
-    background: #edfffb;
-    border-radius: @border_radius @border_radius 12px 12px;
+    background: hsl(@theme-hue, 100%, 96%);
+    border-radius: @border_radius @border_radius 50% 50% ~"/" @border_radius @border_radius 10% 10%;
 
     transform: translate3d(0,0,0);
 
@@ -391,7 +393,7 @@ body {
     }
 
     .action {
-        background: #324e47;
+        background: hsl(@theme-hue, 22%, 25%);
         border-radius: 0 0 @border_radius @border_radius;
         padding: 15px 30px 15px 30px;
 
@@ -404,14 +406,14 @@ body {
             padding-top: 28px;
             background: url(../../images/envelope.png) left top no-repeat;
             text-transform: uppercase;
-            color: #5d9083;
+            color: hsl(@theme-hue, 22%, 46%);
             font-size: 12px;
             text-decoration: none;
             text-align: center;
 
             &:hover {
                 background-image: url(../../images/envelope-hover.png);
-                color: #72ad9f;
+                color: hsl(@theme-hue, 26%, 56%);
             }
             
         }
@@ -429,11 +431,11 @@ body {
             border-radius: 4px;
             cursor: pointer;
             color: white;
-            background: linear-gradient(to bottom, #2ebe9b 0%,#29a788 100%); /* W3C */
-            box-shadow: 0px 3px 5px rgba(0,0,0,.6);
+            background: linear-gradient(to bottom, hsl(@theme-hue, 61%, 46%) 0%, hsl(@theme-hue, 61%, 41%) 100%); /* W3C */
+            box-shadow: 0 4px 5px -3px rgba(0,0,0,.4);
 
             &:hover {
-                background: #29a788;
+                background: hsl(@theme-hue, 61%, 41%);
             }
         }
 
@@ -447,7 +449,7 @@ body {
             color: #c8d0ce;
 
             a {
-                color: #2ebe9b;
+                color: hsl(@theme-hue, 61%, 46%);
                 font-weight: bold;
                 text-decoration: none;
 
@@ -529,10 +531,10 @@ body {
             font-weight: bold;
             border-radius: 0px 0px 5px 5px;
 
-            background: linear-gradient(to bottom, #2ebe9b 0%,#29a788 100%); /* W3C */
+            background: linear-gradient(to bottom, hsl(@theme-hue, 61%, 46%) 0%,hsl(@theme-hue, 61%, 41%) 100%); /* W3C */
 
             &:hover {
-                background: #29a788;
+                background: hsl(@theme-hue, 61%, 41%);
             }
         }
     }
