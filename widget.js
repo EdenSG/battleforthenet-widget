@@ -65,7 +65,7 @@ properties as desired.
 
     // What hue should the modal be? (Only applies to the modal at the moment)
     if (typeof _bftn_options.modal_hue == "undefined")
-        _bftn_options.modal_hue = 15;
+        _bftn_options.modal_hue = 165;
 
     /**
 --------------------------------------------------------------------------------
