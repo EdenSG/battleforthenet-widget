@@ -29,19 +29,58 @@ var animations = {
     modal: {
         options: {
             debug: false,
+            skipEmailSignup: false,
+            skipCallTool: false,
+            fastAnimation: false
         },
+
+        // If international, phone call functionality is disallowed
+        phoneCallAllowed: true,
+        zipcode: null,
+        org: 'fftf',
+
         init: function(options) {
             for (var k in options) this.options[k] = options[k];
             return this;
         },
         start: function() {
+
+            if (this.options.skipEmailSignup)
+            {
+                $('#direct_call').show();
+                $('#petition').hide();
+                $('.bottom-link').hide();
+            }
+            if (this.options.skipCallTool)
+                this.phoneCallAllowed = false;
+
+            if (this.options.fastAnimation || document.fastForwardAnimation)
+            {
+                $('body').addClass('fast-animation');
+                setTimeout(stupidIEZoomFix, 10);
+            }
+            else
+            {
+                setTimeout(stupidIEZoomFix, 2250);
+            }
+
+            // Optimizely test
+            if (document.showCTATextImmediately)
+            {
+                $('#header h1').css('opacity', 0);
+                $('#header .cta').css('opacity', 1);
+            }
+
+            if (Math.random() < 0.20) {
+                $('#fftf_disclosure').hide();
+                $('#fp_disclosure').show();
+                this.org = 'fp';
+            }
+
             $('a.close').click(function(e) {
                 e.preventDefault();
                 $('body').addClass('closed');
-                trackLeaderboardStat({
-                    stat: 'close_widget',
-                    data: 'modal'
-                });
+                trackLeaderboardStat({stat: 'close_widget', data: 'modal'});
                 setTimeout(function() {
                     sendMessage('stop');
                 }, 750);
@@ -53,7 +92,7 @@ var animations = {
                 setTimeout(function() {
                     $('#overlay').addClass('visible');
                 }, 50);
-
+                
             });
 
             $('a.continue').click(function(e) {
@@ -61,35 +100,92 @@ var animations = {
 
                 setTimeout(function() {
                     $('#overlay').css('display', 'none');
-                }, 1000);
+                }, 2000);
             });
+
+            $('a#cantcall').click(function(e) {
+                e.preventDefault();
+                this.showFinal()
+            }.bind(this));
 
             $("form[name=petition]").submit(function(e) {
                 e.preventDefault();
                 if (this.postUser($(this))) {
-
+                    
                     $("input:not([type=image],[type=button],[type=submit])").val('');
-                    this.showFinal();
 
+                    if (this.phoneCallAllowed)
+                        this.showPhoneCall();
+                    else
+                        this.showFinal();
+                    
                 } else {
                     // alert('Please complete the rest of the form. Thanks!');
                 }
             }.bind(this));
 
+            $("form[name=direct_call]").submit(function(e) {
+                e.preventDefault();
+                var phone = this.validatePhone($('#phone_front').val());
+
+                if (!phone)
+                {
+                    $('#phone_front').addClass('error');
+                }
+                else
+                {
+                    this.placePhonecall(phone);
+                    this.showFinalWithCallInstructions();
+                }
+            }.bind(this));
+
             $('a.facebook').click(function(e) {
-                trackLeaderboardStat({
-                    stat: 'share',
-                    data: 'facebook'
-                });
+                trackLeaderboardStat({stat: 'share', data: 'facebook'});
             });
 
             $('a.twitter').click(function(e) {
-                trackLeaderboardStat({
-                    stat: 'share',
-                    data: 'twitter'
-                });
+                trackLeaderboardStat({stat: 'share', data: 'twitter'});
             });
-            // window.location.hash = '#loaded'
+
+            $('#call').click(function(e) {
+                e.preventDefault();
+
+                var phone = this.validatePhone($('#phone').val());
+
+                if (!phone)
+                    return $('#phone').addClass('error');
+
+                $('#call').attr('disabled', true);
+                $('#phone').attr('disabled', true);
+
+                this.placePhonecall(phone);
+
+                setTimeout(function() {
+                    this.showFinalWithCallInstructions();
+                }.bind(this), 1000);
+            }.bind(this));
+
+            $.ajax({
+                url: '//fftf-geocoder.herokuapp.com/',
+                dataType: 'json',
+                type: 'get',
+                success: function(data) {
+                    if (data.country && data.country.iso_code)
+                    {
+                        $('#country').val(data.country.iso_code);
+                        if (data.country.iso_code != "US")
+                        {
+                            this.phoneCallAllowed = false;
+
+                            if (this.options.skipEmailSignup)
+                            {
+                                // Nothing to do. Close the modal now.
+                                sendMessage('stop');
+                            }
+                        }
+                    }
+                }.bind(this)
+            });
         },
         log: function() {
             if (this.options.debug)
@@ -113,7 +209,8 @@ var animations = {
             formFields.forEach(function(field) {
                 $("input[name=" + field + "]", actionForm).removeClass('error');
                 if (
-                    $("input[name=" + field + "]", actionForm)[0] &&
+                    $("input[name=" + field + "]", actionForm)[0]
+                    &&
                     $("input[name=" + field + "]", actionForm).val() === ""
                 ) {
                     fail = true;
@@ -126,13 +223,24 @@ var animations = {
             if (fail)
                 return false;
 
-            // doc['action_comment'] = $("[name=action_comment]").val();
-            doc['action_comment'] = $("JL-TBD").val(); // JL HACK
-            doc['country'] = 'US'; // JL HACK
+            this.zipcode = $('#zip').val();
+            var regex = /^\d{5}$/;
+            
+            if (!regex.test(this.zipcode))
+                this.phoneCallAllowed = false;
 
+
+            // doc['action_comment'] = $("[name=action_comment]").val();
+            doc['action_comment'] = '';  // JL HACK
+            doc['country'] = $('#country').val();
+
+            if ($('#opt-in').is(':checked') == false)
+                doc['opt_out'] = true;
+
+            doc['org'] = this.org;
 
             $.ajax({
-                url: "https://api.battleforthenet.com/submit",
+                url: "https://queue.battleforthenet.com/submit",
                 // url: "http://debbie:3019/submit",    // JL TEST ~
                 type: "post",
                 dataType: "json",
@@ -141,94 +249,167 @@ var animations = {
                     userID = res.userID;
                 }
             });
-            trackLeaderboardStat({
-                stat: 'submit_form'
-            });
+            trackLeaderboardStat({stat: 'submit_form'});
+
+            this.trackOptimizely('fcc_post');
 
             return true;
+        },
+
+        trackOptimizely: function(ev) {
+            window['optimizely'] = window['optimizely'] || [];
+            window.optimizely.push(["trackEvent", ev]);
+        },
+
+        showFinalWithCallInstructions: function() {
+            $('#stepFinal .defaultText').hide();
+            $('#stepFinal .altText').show();
+            this.showFinal();
+        },
+
+        validatePhone: function(num) {
+            num = num.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, '');
+            num = num.replace("+", "").replace(/\-/g, '');
+
+            if (num.charAt(0) == "1")
+                num = num.substr(1);
+
+            if (num.length != 10)
+                return false;
+
+            return num;
+        },
+
+        placePhonecall: function(num) {
+            $('#call').html('Calling...');
+
+            var data = {
+                campaignId: 'battleforthenet',
+                userPhone: num,
+                fftfCampaign: 'internetslowdown',
+                fftfReferer: host,
+                fftfSession: session
+            }
+            if (this.zipcode)
+                data.zipcode = this.zipcode;
+
+            $.ajax({
+                url: 'https://call-congress.fightforthefuture.org/create',
+                type: "get",
+                dataType: "json",
+                data: data,
+                success: function(res) {
+                    console.log('Placed call-congress call: ', res);
+                }
+            });
+
+            this.trackOptimizely('call_congress');
         },
 
         showFinal: function() {
             $('#step1').addClass('hidden');
             $('#header').addClass('hidden');
+            $('#stepCall').css('opacity', 0);
             setTimeout(function() {
-                $('#step1').css('visibility', 'hidden')
+                $('#step1').css('visibility', 'hidden');
+                $('#stepCall').css('visibility', 'hidden');
             }, 1000);
             $('#stepFinal').show();
             setTimeout(function() {
-                $('#stepFinal').css('opacity', 1)
+                $('#stepFinal').css('opacity', 1);
+            }, 10);
+        },
+
+        showPhoneCall: function() {
+            $('#step1').addClass('hidden');
+            $('#header').addClass('hidden');
+            setTimeout(function() {
+                $('#step1').css('visibility', 'hidden');
+            }, 1000);
+            $('#stepCall').show();
+            setTimeout(function() {
+                $('#stepCall').css('opacity', 1);
             }, 10);
         }
     }
 }
 
-setTimeout(function() {
+$(document).ready(function() {
+
     $('#header h1').html($('h1.headline').html());
     $('#header .cta p').html($('p.cta-hidden-trust-me').html());
-}, 2000);
-setTimeout(function() {
-    $('#header .cta').css('height', $('#header').outerHeight() + 'px');
-    $('#letter').css('height', $('#modal').outerHeight() + 'px');
-    $('#letter').css('opacity', 1);
-}, 3000);
 
-if (window.location.href.indexOf('EMBED') != -1) {
-    document.body.className = 'embedded';
-    animations.modal.start();
-}
+    setTimeout(function() {
+        $('#header .cta').css('height', $('#header').outerHeight()+'px');
+        $('#letter').css('height', $('#modal').outerHeight()+'px');
+        $('#letter').css('opacity', 1);
+    }, 1000);
+    
+    var adjustThemeColor = function(modal_hue) {
+            var themeColor = [{
+                element: $("#overlay"),
+                cssProp: "background",
+                colorValue: "hsla(" + modal_hue + ", 30%, 20%, 0.2)"
+            }, {
+                element: $(".loading-region, #modal"),
+                cssProp: "background",
+                colorValue: "hsl(" + modal_hue + ", 100%, 96%)"
+            }, {
+                element: $(".loading-region"),
+                cssProp: "box-shadow",
+                colorValue: "0px 0px 150px hsl(" + modal_hue + ", 100%, 96%)"
+            }, {
+                element: $("#header"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+            }, {
+                element: $(".action"),
+                cssProp: "background",
+                colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+            }, {
+                element: $(".action a.read"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 22%, 46%)"
+            }, {
+                element: $(".action a.read"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 26%, 56%)",
+                pseudo: ":hover"
+            }, {
+                element: $("button, #overlay .letter > a"),
+                cssProp: "background",
+                colorValue: "linear-gradient(to bottom, hsl(" + modal_hue + ", 61%, 46%) 0%, hsl(" + modal_hue + ", 61%, 41%) 100%)"
+            }, {
+                element: $("button, #overlay .letter > a"),
+                cssProp: "background",
+                colorValue: "hsl(" + modal_hue + ", 61%, 41%)",
+                pseudo: ":hover"
+            }, {
+                element: $(".disclosure a"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 61%, 46%)"
+            }];
+            for (var i = 0; i < themeColor.length; i++) {
+                themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
+            }
+        }
 
+        adjustThemeColor(hue);
 
-var adjustThemeColor = function(modal_hue) {
-    var themeColor = [{
-        element: $("#overlay"),
-        cssProp: "background",
-        colorValue: "hsla(" + modal_hue + ", 30%, 20%, 0.2)"
-    }, {
-        element: $(".loading-region, #modal"),
-        cssProp: "background",
-        colorValue: "hsl(" + modal_hue + ", 100%, 96%)"
-    }, {
-        element: $(".loading-region"),
-        cssProp: "box-shadow",
-        colorValue: "0px 0px 150px hsl(" + modal_hue + ", 100%, 96%)"
-    }, {
-        element: $("#header"),
-        cssProp: "color",
-        colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
-    }, {
-        element: $(".action"),
-        cssProp: "background",
-        colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
-    }, {
-        element: $(".action a.read"),
-        cssProp: "color",
-        colorValue: "hsl(" + modal_hue + ", 22%, 46%)"
-    }, {
-        element: $(".action a.read"),
-        cssProp: "color",
-        colorValue: "hsl(" + modal_hue + ", 26%, 56%)",
-        pseudo: ":hover"
-    }, {
-        element: $("button, #overlay .letter > a"),
-        cssProp: "background",
-        colorValue: "linear-gradient(to bottom, hsl(" + modal_hue + ", 61%, 46%) 0%, hsl(" + modal_hue + ", 61%, 41%) 100%)"
-    }, {
-        element: $("button, #overlay .letter > a"),
-        cssProp: "background",
-        colorValue: "hsl(" + modal_hue + ", 61%, 41%)",
-        pseudo: ":hover"
-    }, {
-        element: $(".disclosure a"),
-        cssProp: "color",
-        colorValue: "hsl(" + modal_hue + ", 61%, 46%)"
-    }];
-    for (var i = 0; i < themeColor.length; i++) {
-        themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
-    }
-}
+    if (window.location.href.indexOf('EMBED') != -1) {
 
-adjustThemeColor(hue);
+        document.body.className = 'embedded';
 
+        if (window.location.href.indexOf('NOCALL') != -1)
+            animations.modal.options.skipCallTool = true; 
+
+        if (window.location.href.indexOf('NOEMAIL') != -1)
+            animations.modal.options.skipEmailSignupp = true; 
+               
+        animations.modal.options.fastAnimation = true;
+        animations.modal.start(); 
+    } 
+});
 
 
 
@@ -238,9 +419,7 @@ adjustThemeColor(hue);
  *  -------------------------- OMG ---------------------------------------------
  */
 
-setTimeout(function() {
-    stupidIEZoomFix();
-}, 2250);
+
 
 function stupidIEZoomFix() {
     if (ieVersion) {
@@ -248,7 +427,7 @@ function stupidIEZoomFix() {
         $('#modal').addClass('fullyVisible').addClass('IE');
         setTimeout(function() {
             $('#header').addClass('fullyVisible').addClass('IE');
-        }, 150);
+        }, 150);    
     } else {
         $('.loading-region').addClass('zoomedOut').addClass('notIE');
         $('#modal').addClass('fullyVisible').addClass('notIE');
@@ -290,11 +469,11 @@ var ie10Styles = [
     'msFlexOrder'
 ];
 
-var ie11Styles = ['msTextCombineHorizontal'];
+var ie11Styles = ['msTextCombineHorizontal']; 
 
 /*
- * Test all IE only CSS properties
- */
+* Test all IE only CSS properties
+*/
 var b = document.body;
 var s = b.style;
 var ieVersion = null;
@@ -318,7 +497,8 @@ for (var i = 0; i < ie11Styles.length; i++) {
     }
 }
 
-if (ieVersion) {
+if (ieVersion)
+{
     document.getElementById('modal').className = 'IE';
     document.getElementById('header').className = 'IE';
 }

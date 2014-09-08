@@ -15,11 +15,12 @@
 @scene_top_padding: 60px;
 @scene_margin_top: -200px;
 
-@theme-hue: 165; // Default: 165 
+@theme-hue: 165; // Default: 165
 
-@headline_ellipsis_start_delay: 2s;
+@headline_ellipsis_fast_start: 1.5s;
+@headline_ellipsis_start_delay: 4s;
 @headline_ellipsis_delay_each: 1.5s;
-@headline_after_ellipsis_delay: 3s;
+@headline_after_ellipsis_delay: 3.5s;
 
 html {
     height: 100%;
@@ -51,13 +52,45 @@ body {
             }
         }
     }
-    &:after {
-        content: url(../../images/envelope-hover.png) url(../../images/envelope.png) url(../../images/close.png) url(../../images/field-gradient.png) url(../../images/check-off.png) url(../../images/check-on.png); /* Preload images */ 
-        display: none;
+
+    &.fast-animation {
+
+        #header h1 {
+            -webkit-animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each) + @headline_after_ellipsis_delay;
+            animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each) + @headline_after_ellipsis_delay;
+        }
+
+        #header .cta {
+            -webkit-animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each) + @headline_after_ellipsis_delay;
+            animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each) + @headline_after_ellipsis_delay;
+        }
+
+        #header h1 span {
+            &.e1 {
+                -webkit-animation-delay: @headline_ellipsis_fast_start + (0 * @headline_ellipsis_delay_each);
+                animation-delay: @headline_ellipsis_fast_start + (0 * @headline_ellipsis_delay_each);
+            }
+            &.e2 {
+                -webkit-animation-delay: @headline_ellipsis_fast_start + (1 * @headline_ellipsis_delay_each);
+                animation-delay: @headline_ellipsis_fast_start + (1 * @headline_ellipsis_delay_each);
+            }
+            &.e3 {
+                -webkit-animation-delay: @headline_ellipsis_fast_start + (2 * @headline_ellipsis_delay_each);
+                animation-delay: @headline_ellipsis_fast_start + (2 * @headline_ellipsis_delay_each);
+            }
+            &.e4 {
+                -webkit-animation-delay: @headline_ellipsis_fast_start + (3 * @headline_ellipsis_delay_each);
+                animation-delay: @headline_ellipsis_fast_start + (3 * @headline_ellipsis_delay_each);
+            }
+            &.e5 {
+                -webkit-animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each);
+                animation-delay: @headline_ellipsis_fast_start + (4 * @headline_ellipsis_delay_each);
+            }
+        }
     }
 
     #overlay {
-        background: hsla(@theme-hue, 30%, 20%, 0.2);
+        background: transparent;
     }
 }
 .clear {
@@ -75,6 +108,7 @@ body {
     white-space: nowrap;
     padding: 6px 12px;
     font-size: 14px;
+    user-select: none;
     text-decoration: none;
 
     border: 0px none;
@@ -130,8 +164,6 @@ body {
 
     &.zoomedOut {
         transition: all .75s ease-out;
-
-        // box-shadow: 0 -11px 30px -12px rgba(0,0,0,.6);
 
         &.notIE {
             transform: scale(.6);
@@ -276,18 +308,18 @@ body {
 
         h2 {
             text-align: center;
-            padding: 0px 0 3px 0;
+            padding: 0px 10px 3px 10px;
             margin: 0px;
         }
 
         p {
             padding: 0px 35px;
-            margin: 0px 0 30px 0;
+            margin: 0px 0 25px 0;
         }
 
         h4 {
             font-size: 14px;
-            margin: 35px auto 10px auto;
+            margin: 0px auto 10px auto;
             text-align: center;
             padding: 0px;
             opacity: .5;
@@ -494,8 +526,8 @@ body {
                 background-image: url(../../images/envelope-hover.png);
                 color: hsl(@theme-hue, 26%, 56%);
             }
-            
         }
+
         .disclosure {
             padding: 5px 0px;
             box-sizing: border-box;
@@ -758,6 +790,10 @@ body {
 
     body {
         overflow-y: auto;
+
+        &.embedded {
+            overflow-y: hidden;
+        }
     }
 
     #scene {
@@ -779,6 +815,11 @@ body {
             transform: translateY(0px);
             top: 0px;
         }
+    }
+    .btn {
+        font-size: 12px;
+        margin: 0px 3px 7px;
+        padding: 0px 10px;
     }
     #header {
         width: 100%;

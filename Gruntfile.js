@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    grunt.initConfig({
+  grunt.initConfig({
         watch: {
             styles: {
                 files: [
@@ -35,33 +35,33 @@ module.exports = function(grunt) {
                 }
             }
         },
-        uglify: {
-            js: {
-                files: {
-                    'widget.min.js': ['widget.js'],
-                    'iframe/js/min/modal.min.js': ['iframe/js/modal.js'],
-                    'iframe/js/min/banner.min.js': ['iframe/js/banner.js'],
-                    'iframe/js/min/common.min.js': ['iframe/js/common.js']
-                }
+    uglify : {
+        js: {
+            files: {
+                'widget.min.js' : [ 'widget.js' ],
+                'iframe/js/min/modal.min.js' : [ 'iframe/js/modal.js' ],
+                'iframe/js/min/banner.min.js' : [ 'iframe/js/banner.js' ],
+                'iframe/js/min/common.min.js' : [ 'iframe/js/common.js' ]
             }
-        },
-        less: {
-            development: {
-                options: {
+        }
+    },
+    less: {
+      development: {
+        options: {
                     cleancss: true,
-                    compress: true,
-                    yuicompress: true,
-                    optimization: 2
-                },
-                files: {
-                    // target.css file: source.less file
-                    "iframe/css/min/modal.min.css": "iframe/css/modal.less",
-                    "iframe/css/min/banner.min.css": "iframe/css/banner.less"
-                }
-            }
+          compress: true,
+          yuicompress: true,
+          optimization: 2
         },
+        files: {
+          // target.css file: source.less file
+          "iframe/css/min/modal.min.css": "iframe/css/modal.less",
+          "iframe/css/min/banner.min.css": "iframe/css/banner.less"
+        }
+      }
+    },
         autoprefixer: {
-            options: {
+        options: {
                 browsers: ['last 2 versions', 'ie >= 8', '> 1%', 'Firefox ESR', 'Opera 12.1']
             },
             css: {
@@ -79,22 +79,22 @@ module.exports = function(grunt) {
                         baseDir: "./",
                         watchTask: true,
                         notify: false
-                    }
+        }
                 }
-            },
+      },
             host: {
                 bsFiles: {
                     src: ['iframe/css/min/*.css', 'iframe/js/min/*.js', 'iframe/images/**', 'iframe/*.html']
                 },
-                options: {
+        options: {
                     server: {
                         baseDir: "./",
                         watchTask: false,
                         ghostMode: false,
                         notify: false
-                    }
-                }
-            }
+        }
+      }
+    }
         },
         imageoptim: {
             images: {
@@ -106,12 +106,12 @@ module.exports = function(grunt) {
                 src: ['iframe/images', 'demos/']
             }
         }
-    });
+  });
 
-    grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-autoprefixer');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-browser-sync');
     grunt.loadNpmTasks('grunt-imageoptim');
     grunt.loadNpmTasks('grunt-newer');
