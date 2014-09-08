@@ -371,19 +371,9 @@ $(document).ready(function() {
                 cssProp: "color",
                 colorValue: "hsl(" + modal_hue + ", 22%, 46%)"
             }, {
-                element: $(".action a.read"),
-                cssProp: "color",
-                colorValue: "hsl(" + modal_hue + ", 26%, 56%)",
-                pseudo: ":hover"
-            }, {
                 element: $("button, #overlay .letter > a"),
                 cssProp: "background",
                 colorValue: "linear-gradient(to bottom, hsl(" + modal_hue + ", 61%, 46%) 0%, hsl(" + modal_hue + ", 61%, 41%) 100%)"
-            }, {
-                element: $("button, #overlay .letter > a"),
-                cssProp: "background",
-                colorValue: "hsl(" + modal_hue + ", 61%, 41%)",
-                pseudo: ":hover"
             }, {
                 element: $(".disclosure a"),
                 cssProp: "color",
