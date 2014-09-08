@@ -63,6 +63,10 @@ if (typeof _bftn_options.debug == "undefined")
 if (typeof _bftn_options.always_show_widget == "undefined")
 	_bftn_options.always_show_widget = false;
 
+// What hue should the modal be? (Only applies to the modal at the moment)
+if (typeof _bftn_options.modal_hue == "undefined")
+    _bftn_options.modal_hue = 165;
+
 /**
 --------------------------------------------------------------------------------
 ANIMATION DEFINITIONS
@@ -81,19 +85,11 @@ var _bftn_animations = {
 
 		// Default options: Override these with _bftn_options object (see above)
 		options: {
-			modalAnimation: 'modal'
+			modalAnimation: 'modal',
+			skipEmailSignup: false,
+			skipCallTool: false,
+			fastAnimation: false
 		},
-
-		// preload: [
-		// 	'envelope.png',
-		// 	'envelope-hover.png',
-		// 	'field-gradient.png',
-		// 	'check-on.png',
-		// 	'check-off.png',
-		// 	'check-on-big.png',
-		// 	'check-off-big.png',
-		// 	'close.png'
-		// ],
 
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
@@ -132,8 +128,6 @@ var _bftn_animations = {
 			theme: 'light'
 		},
 
-		// preload: [],
-
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
 			for (var k in options) this.options[k] = options[k];
@@ -162,8 +156,7 @@ var _bftn_animations = {
 			// otherwise it will be fixed to the top / bottom
 			var minFloatWidth = this.options.width-1;
 
-			var css = '
-				#_bftn_iframe { \
+			var css = '#_bftn_iframe { \
 					position: fixed; '+pos+' \
 					width: '+this.options.width+'px; \
 					height: '+this.options.height+'px; \
@@ -209,17 +202,17 @@ var _bftn_util = {
 		document.head.appendChild(style);
 	},
 
-	// Create the iframe used to display the animation  
-	createIframe: function(animation) {
-		var iframe = document.createElement('iframe');
-		iframe.id = '_bftn_iframe';
-		iframe.src = _bftn_options.iframe_base_path + '/' + animation + '.html';
-		iframe.frameBorder = 0;
-		iframe.allowTransparency = true; 
-		iframe.style.display = 'none';
-		document.body.appendChild(iframe);
-		return iframe;
-	},
+    // Create the iframe used to display the animation  
+    createIframe: function(animation) {
+        var iframe = document.createElement('iframe');
+        iframe.id = '_bftn_iframe';
+        iframe.src = _bftn_options.iframe_base_path + '/' + animation + '.html#hue=' + _bftn_options.modal_hue;
+        iframe.frameBorder = 0;
+        iframe.allowTransparency = true;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        return iframe;
+    },
 
 	// Destroy the iframe used to display the animation
 	destroyIframe: function() {
@@ -332,40 +325,12 @@ var ready = function() {
 
 	var animation = _bftn_animations[_bftn_options.animation];
 
-	// var images = new Array()
-	// var preloaded = 0;
+	var images = new Array()
+	var preloaded = 0;
 
-	var beginAnimation = function() {
-		setTimeout(function() {
-			animation.init(_bftn_options).start();
-		}, _bftn_options.delay);
-	}
-
-	// if (typeof animation.preload != "undefined" && animation.preload.length)
-	// {
-	// 	for (i = 0; i < animation.preload.length; i++) {
-
-	// 		var src = animation.preload[i];
-
-	// 		images[i] = new Image()
-	// 		images[i].src = _bftn_options.iframe_base_path+'/images/'+src;
-	// 		images[i].onload = function() {
-	// 			preloaded++;
-	// 			_bftn_util.log('Preloaded ' + preloaded + ' images.');
-	// 			if (preloaded == images.length)
-	// 			{
-	// 				_bftn_util.log('DONE PRELOADING IMAGES.')
-	// 				_bftn_util.log('Animate in '+_bftn_options.delay+' ms');
-
-	// 				beginAnimation();
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// else	// no preload, just start the animation
-	// {
-		beginAnimation();
-	// }
+	setTimeout(function() {
+		animation.init(_bftn_options).start();
+	}, _bftn_options.delay);
 }
 
 // Wait for DOM content to load.
