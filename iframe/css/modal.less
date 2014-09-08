@@ -35,6 +35,11 @@ body {
 
     transition: opacity .75s ease-out;
 
+    &::before {
+        content: url(../../images/close.png) url(../../images/field-gradient.png) url(../../images/envelope.png) url(../../images/envelope-hover.png) url(../../images/check-off.png) url(../../images/check-on.png);
+        display: none;
+    }
+
     &.closed {
         opacity: 0;
     }
@@ -793,6 +798,10 @@ body {
 
         &.embedded {
             overflow-y: hidden;
+        }
+        &::before {
+            content: url(../../images/close.png) url(../../images/field-gradient.png) url(../../images/envelope.png) url(../../images/envelope-hover.png) url(../../images/check-off-big.png) url(../../images/check-on-big.png);
+        
         }
     }
 
