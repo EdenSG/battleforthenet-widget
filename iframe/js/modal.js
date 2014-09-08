@@ -22,6 +22,9 @@
  @licend  The above is the entire license notice
     for the JavaScript code in this page.
 */
+
+var hue = parseFloat(window.location.hash.match(/\d+/));
+
 var animations = {
     modal: {
         options: {
@@ -32,11 +35,13 @@ var animations = {
             return this;
         },
         start: function() {
-
             $('a.close').click(function(e) {
                 e.preventDefault();
                 $('body').addClass('closed');
-                trackLeaderboardStat({stat: 'close_widget', data: 'modal'});
+                trackLeaderboardStat({
+                    stat: 'close_widget',
+                    data: 'modal'
+                });
                 setTimeout(function() {
                     sendMessage('stop');
                 }, 750);
@@ -48,7 +53,7 @@ var animations = {
                 setTimeout(function() {
                     $('#overlay').addClass('visible');
                 }, 50);
-                
+
             });
 
             $('a.continue').click(function(e) {
@@ -62,22 +67,29 @@ var animations = {
             $("form[name=petition]").submit(function(e) {
                 e.preventDefault();
                 if (this.postUser($(this))) {
-                    
+
                     $("input:not([type=image],[type=button],[type=submit])").val('');
                     this.showFinal();
-                    
+
                 } else {
                     // alert('Please complete the rest of the form. Thanks!');
                 }
             }.bind(this));
 
             $('a.facebook').click(function(e) {
-                trackLeaderboardStat({stat: 'share', data: 'facebook'});
+                trackLeaderboardStat({
+                    stat: 'share',
+                    data: 'facebook'
+                });
             });
 
             $('a.twitter').click(function(e) {
-                trackLeaderboardStat({stat: 'share', data: 'twitter'});
+                trackLeaderboardStat({
+                    stat: 'share',
+                    data: 'twitter'
+                });
             });
+            // window.location.hash = '#loaded'
         },
         log: function() {
             if (this.options.debug)
@@ -101,8 +113,7 @@ var animations = {
             formFields.forEach(function(field) {
                 $("input[name=" + field + "]", actionForm).removeClass('error');
                 if (
-                    $("input[name=" + field + "]", actionForm)[0]
-                    &&
+                    $("input[name=" + field + "]", actionForm)[0] &&
                     $("input[name=" + field + "]", actionForm).val() === ""
                 ) {
                     fail = true;
@@ -116,10 +127,10 @@ var animations = {
                 return false;
 
             // doc['action_comment'] = $("[name=action_comment]").val();
-            doc['action_comment'] = $("JL-TBD").val();  // JL HACK
-            doc['country'] = 'US';                      // JL HACK
+            doc['action_comment'] = $("JL-TBD").val(); // JL HACK
+            doc['country'] = 'US'; // JL HACK
 
-            
+
             $.ajax({
                 url: "https://api.battleforthenet.com/submit",
                 // url: "http://debbie:3019/submit",    // JL TEST ~
@@ -130,7 +141,9 @@ var animations = {
                     userID = res.userID;
                 }
             });
-            trackLeaderboardStat({stat: 'submit_form'});
+            trackLeaderboardStat({
+                stat: 'submit_form'
+            });
 
             return true;
         },
@@ -154,16 +167,70 @@ setTimeout(function() {
     $('#header .cta p').html($('p.cta-hidden-trust-me').html());
 }, 2000);
 setTimeout(function() {
-    $('#header .cta').css('height', $('#header').outerHeight()+'px');
-    $('#letter').css('height', $('#modal').outerHeight()+'px');
+    $('#header .cta').css('height', $('#header').outerHeight() + 'px');
+    $('#letter').css('height', $('#modal').outerHeight() + 'px');
     $('#letter').css('opacity', 1);
 }, 3000);
 
-if (window.location.href.indexOf('EMBED') != -1) 
-{
+if (window.location.href.indexOf('EMBED') != -1) {
     document.body.className = 'embedded';
-    animations.modal.start(); 
+    animations.modal.start();
 }
+
+
+var adjustThemeColor = function(modal_hue) {
+    var themeColor = [{
+        element: $("#overlay"),
+        cssProp: "background",
+        colorValue: "hsla(" + modal_hue + ", 30%, 20%, 0.2)"
+    }, {
+        element: $(".loading-region, #modal"),
+        cssProp: "background",
+        colorValue: "hsl(" + modal_hue + ", 100%, 96%)"
+    }, {
+        element: $(".loading-region"),
+        cssProp: "box-shadow",
+        colorValue: "0px 0px 150px hsl(" + modal_hue + ", 100%, 96%)"
+    }, {
+        element: $("#header"),
+        cssProp: "color",
+        colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+    }, {
+        element: $(".action"),
+        cssProp: "background",
+        colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+    }, {
+        element: $(".action a.read"),
+        cssProp: "color",
+        colorValue: "hsl(" + modal_hue + ", 22%, 46%)"
+    }, {
+        element: $(".action a.read"),
+        cssProp: "color",
+        colorValue: "hsl(" + modal_hue + ", 26%, 56%)",
+        pseudo: ":hover"
+    }, {
+        element: $("button, #overlay .letter > a"),
+        cssProp: "background",
+        colorValue: "linear-gradient(to bottom, hsl(" + modal_hue + ", 61%, 46%) 0%, hsl(" + modal_hue + ", 61%, 41%) 100%)"
+    }, {
+        element: $("button, #overlay .letter > a"),
+        cssProp: "background",
+        colorValue: "hsl(" + modal_hue + ", 61%, 41%)",
+        pseudo: ":hover"
+    }, {
+        element: $(".disclosure a"),
+        cssProp: "color",
+        colorValue: "hsl(" + modal_hue + ", 61%, 46%)"
+    }];
+    for (var i = 0; i < themeColor.length; i++) {
+        themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
+    }
+}
+
+adjustThemeColor(hue);
+
+
+
 
 /**
  *  -------------------------- OMG ---------------------------------------------
@@ -181,7 +248,7 @@ function stupidIEZoomFix() {
         $('#modal').addClass('fullyVisible').addClass('IE');
         setTimeout(function() {
             $('#header').addClass('fullyVisible').addClass('IE');
-        }, 150);    
+        }, 150);
     } else {
         $('.loading-region').addClass('zoomedOut').addClass('notIE');
         $('#modal').addClass('fullyVisible').addClass('notIE');
@@ -223,11 +290,11 @@ var ie10Styles = [
     'msFlexOrder'
 ];
 
-var ie11Styles = ['msTextCombineHorizontal']; 
+var ie11Styles = ['msTextCombineHorizontal'];
 
 /*
-* Test all IE only CSS properties
-*/
+ * Test all IE only CSS properties
+ */
 var b = document.body;
 var s = b.style;
 var ieVersion = null;
@@ -251,8 +318,7 @@ for (var i = 0; i < ie11Styles.length; i++) {
     }
 }
 
-if (ieVersion)
-{
+if (ieVersion) {
     document.getElementById('modal').className = 'IE';
     document.getElementById('header').className = 'IE';
 }

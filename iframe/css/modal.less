@@ -126,7 +126,7 @@ body {
 
     transform-origin: center top;
 
-    box-shadow: 0px 0px 150px white;
+    box-shadow: 0px 0px 150px hsl(@theme-hue, 100%, 96%);
 
     &.zoomedOut {
         transition: all .75s ease-out;
@@ -254,15 +254,8 @@ body {
         }
     }
 
-<<<<<<< HEAD
-    #stepFinal {
-=======
+    #stepFinal, 
     .extra-modal {
-        -ms-transition: all .75s ease-out;
-        -o-transition: all .75s ease-out;
-        -moz-transition: all .75s ease-out;
-        -webkit-transition: all .75s ease-out;
->>>>>>> 7ca0512e8e57086b778912286d0eb4649e7b15d1
         transition: all .75s ease-out; 
 
         &.hidden {
@@ -448,28 +441,21 @@ body {
         }
     }
 
-    button {
-        box-sizing: border-box;
-        height: 48px;
-        line-height: 48px;
-        text-align: center;
-        width: @button_width_desktop;
-        border: 0px;
-        font-size: 20px;
-        font-family: proxima-nova, Arial, sans-serif;
-        text-transform: uppercase;
-        border-radius: 4px;
-        cursor: pointer;
-        color: white;
-        background: #2ebe9b; /* Old browsers */
-        background: -moz-linear-gradient(top, #2ebe9b 0%, #29a788 100%); /* FF3.6+ */
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2ebe9b), color-stop(100%,#29a788)); /* Chrome,Safari4+ */
-        background: -webkit-linear-gradient(top, #2ebe9b 0%,#29a788 100%); /* Chrome10+,Safari5.1+ */
-        background: -o-linear-gradient(top, #2ebe9b 0%,#29a788 100%); /* Opera 11.10+ */
-        background: -ms-linear-gradient(top, #2ebe9b 0%,#29a788 100%); /* IE10+ */
-        background: linear-gradient(to bottom, #2ebe9b 0%,#29a788 100%); /* W3C */
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2ebe9b', endColorstr='#29a788',GradientType=0 ); /* IE6-9 */
-        box-shadow: 0px 3px 5px black rgba(0,0,0,.6);
+   button {
+            box-sizing: border-box;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+            width: @button_width_desktop;
+            border: 0px;
+            font-size: 20px;
+            font-family: proxima-nova, Arial, sans-serif;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(to bottom, hsl(@theme-hue, 61%, 46%) 0%, hsl(@theme-hue, 61%, 41%) 100%); /* W3C */
+            box-shadow: 0 4px 5px -3px rgba(0,0,0,.4);
 
         &:disabled {
             background: gray;
@@ -481,7 +467,7 @@ body {
         }
 
         &:hover {
-            background: #29a788;
+            background: hsl(@theme-hue, 61%, 41%);
         }
     }
 
@@ -510,31 +496,6 @@ body {
             }
             
         }
-
-<<<<<<< HEAD
-        button {
-            box-sizing: border-box;
-            height: 48px;
-            line-height: 48px;
-            text-align: center;
-            width: @button_width_desktop;
-            border: 0px;
-            font-size: 20px;
-            font-family: proxima-nova, Arial, sans-serif;
-            text-transform: uppercase;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-            background: linear-gradient(to bottom, hsl(@theme-hue, 61%, 46%) 0%, hsl(@theme-hue, 61%, 41%) 100%); /* W3C */
-            box-shadow: 0 4px 5px -3px rgba(0,0,0,.4);
-
-            &:hover {
-                background: hsl(@theme-hue, 61%, 41%);
-            }
-        }
-
-=======
->>>>>>> 7ca0512e8e57086b778912286d0eb4649e7b15d1
         .disclosure {
             padding: 5px 0px;
             box-sizing: border-box;

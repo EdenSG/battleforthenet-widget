@@ -215,9 +215,9 @@ UTILITY FUNCTIONS
         createIframe: function(animation) {
             var iframe = document.createElement('iframe');
             iframe.id = '_bftn_iframe';
-            iframe.src = _bftn_options.iframe_base_path + '/' + animation + '.html';
+            iframe.src = _bftn_options.iframe_base_path + '/' + animation + '.html#hue=' + _bftn_options.modal_hue;
             iframe.frameBorder = 0;
-            iframe.onload="adjustHue()"
+            // iframe.onload="adjustHue()";
             iframe.allowTransparency = true;
             iframe.style.display = 'none';
             document.body.appendChild(iframe);
