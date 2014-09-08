@@ -377,7 +377,7 @@ $(document).ready(function() {
             }, {
                 element: $(".disclosure a"),
                 cssProp: "color",
-                colorValue: "hsl(" + modal_hue + ", 61%, 46%)"
+                colorValue: "hsl(" + modal_hue + ", 61%, 56%)"
             }];
             for (var i = 0; i < themeColor.length; i++) {
                 themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
