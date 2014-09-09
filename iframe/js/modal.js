@@ -407,17 +407,9 @@ $(document).ready(function() {
     
     var adjustThemeColor = function(modal_hue) {
             var themeColor = [{
-                element: $("#overlay"),
-                cssProp: "background",
-                colorValue: "hsla(" + modal_hue + ", 30%, 20%, 0.2)"
-            }, {
                 element: $(".loading-region, #modal"),
                 cssProp: "background",
                 colorValue: "hsl(" + modal_hue + ", 33%, 85%)"
-            // }, {
-            //     element: $(".loading-region"),
-            //     cssProp: "box-shadow",
-            //     colorValue: "0px 0px 150px hsl(" + modal_hue + ", 100%, 96%)"
             }, {
                 element: $("#header"),
                 cssProp: "color",
