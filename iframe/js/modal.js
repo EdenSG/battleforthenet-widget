@@ -31,7 +31,8 @@ var animations = {
             debug: false,
             skipEmailSignup: false,
             skipCallTool: false,
-            fastAnimation: false
+            fastAnimation: false,
+            boxUnchecked: false
         },
 
         // If international, phone call functionality is disallowed
@@ -54,6 +55,10 @@ var animations = {
             if (this.options.skipCallTool)
                 this.phoneCallAllowed = false;
 
+            if (this.options.boxUnchecked)
+                $('#opt-in').attr('checked', false);
+
+            // ------------------------------ Optimizely test vvv
             if (this.options.fastAnimation || document.fastForwardAnimation)
             {
                 $('body').addClass('fast-animation');
@@ -64,14 +69,17 @@ var animations = {
                 setTimeout(stupidIEZoomFix, 2250);
             }
 
-            // Optimizely test
+            // Optimizely test vvv
             if (document.showCTATextImmediately)
             {
                 $('#header h1').css('opacity', 0);
                 $('#header .cta').css('opacity', 1);
             }
 
-            if (Math.random() < 0.20) {
+            // Optimizely test vvv
+            this.optimizelyTextAB();
+
+            if (Math.random() < 0.16) {
                 $('#fftf_disclosure').hide();
                 $('#fp_disclosure').show();
                 this.org = 'fp';
@@ -86,7 +94,7 @@ var animations = {
                 }, 750);
             });
 
-            $('a.read').click(function(e) {
+            $('a.letter').click(function(e) {
                 e.preventDefault();
                 $('#overlay').css('display', 'block');
                 setTimeout(function() {
@@ -100,7 +108,7 @@ var animations = {
 
                 setTimeout(function() {
                     $('#overlay').css('display', 'none');
-                }, 2000);
+                }, 750);
             });
 
             $('a#cantcall').click(function(e) {
@@ -330,8 +338,60 @@ var animations = {
             setTimeout(function() {
                 $('#stepCall').css('opacity', 1);
             }, 10);
+        },
+
+        optimizelyTextAB: function() {
+
+            var textVariation = null;
+
+            if (document.textVariation)
+                textVariation = document.textVariation
+
+            var showVariation = function(headline, ctaTop, ctaBottom) {
+                $('#header h1').html(headline);
+                $('#header .cta p em').html(ctaTop);
+                $('#header .cta p strong').html(ctaBottom);
+            };
+
+            switch (textVariation) {
+
+                case 'variation1':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Big ISPs want the power to slow (and break!) sites like ours.',
+                        'Tell lawmakers: &ldquo;Stop discrimination. Defend net neutrality.&rdquo;'
+                    );
+                    break;
+
+                case 'variation2':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Big ISPs want the power to slow (and break!) sites like ours.',
+                        'Don\'t let them destroy the best parts of the Internet. Sign now!'
+                    );
+                    break;
+
+                case 'variation3':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Comcast wants the power to slow (and break!) any website.',
+                        'Only you can stop them. Please, sign this letter.'
+                    );
+                    break;
+
+                case 'variation4':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Cable giants want the power to slow (and break!) sites like ours.',
+                        'Tell lawmakers: &ldquo;Stop discrimination. Defend net neutrality.&rdquo;'
+                    );
+                    break;
+
+                default:
+                    break;
         }
     }
+}
 }
 
 $(document).ready(function() {
@@ -347,25 +407,17 @@ $(document).ready(function() {
     
     var adjustThemeColor = function(modal_hue) {
             var themeColor = [{
-                element: $("#overlay"),
-                cssProp: "background",
-                colorValue: "hsla(" + modal_hue + ", 30%, 20%, 0.2)"
-            }, {
                 element: $(".loading-region, #modal"),
                 cssProp: "background",
-                colorValue: "hsl(" + modal_hue + ", 100%, 96%)"
-            }, {
-                element: $(".loading-region"),
-                cssProp: "box-shadow",
-                colorValue: "0px 0px 150px hsl(" + modal_hue + ", 100%, 96%)"
+                colorValue: "hsl(" + modal_hue + ", 33%, 85%)"
             }, {
                 element: $("#header"),
                 cssProp: "color",
-                colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+                colorValue: "hsl(" + modal_hue + ", 21%, 24%)"
             }, {
                 element: $(".action"),
                 cssProp: "background",
-                colorValue: "hsl(" + modal_hue + ", 22%, 25%)"
+                colorValue: "hsl(" + modal_hue + ", 20%, 35%)"
             }, {
                 element: $(".action a.read"),
                 cssProp: "color",
@@ -373,12 +425,25 @@ $(document).ready(function() {
             }, {
                 element: $("button, #overlay .letter > a"),
                 cssProp: "background",
-                colorValue: "linear-gradient(to bottom, hsl(" + modal_hue + ", 61%, 46%) 0%, hsl(" + modal_hue + ", 61%, 41%) 100%)"
+                colorValue: "linear-gradient(to bottom, hsl(" + (modal_hue - 39) + ", 61%, 45%) 0%, hsl(" + (modal_hue - 39) + ", 61%, 40%) 100%)"
             }, {
                 element: $(".disclosure a"),
                 cssProp: "color",
-                colorValue: "hsl(" + modal_hue + ", 61%, 56%)"
-            }];
+                colorValue: "hsl(" + modal_hue + ", 36%, 72%)"
+            }, {
+                element: $("#modal .action .disclosure"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 36%, 72%)"
+            }, {
+                element: $("#header .cta .links a"),
+                cssProp: "color",
+                colorValue: "hsl(" + modal_hue + ", 17%, 63%)"
+            }, {
+                element: $("a.close"),
+                cssProp: "background",
+                colorValue: "hsl(" + modal_hue + ", 20%, 35%)"
+            }
+            ];
             for (var i = 0; i < themeColor.length; i++) {
                 themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
             }
@@ -394,7 +459,10 @@ $(document).ready(function() {
             animations.modal.options.skipCallTool = true; 
 
         if (window.location.href.indexOf('NOEMAIL') != -1)
-            animations.modal.options.skipEmailSignupp = true; 
+            animations.modal.options.skipEmailSignup = true;
+               
+        if (window.location.href.indexOf('UNCHECK') != -1)
+            animations.modal.options.boxUnchecked = true; 
                
         animations.modal.options.fastAnimation = true;
         animations.modal.start(); 

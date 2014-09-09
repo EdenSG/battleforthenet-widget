@@ -65,7 +65,7 @@ if (typeof _bftn_options.always_show_widget == "undefined")
 
 // What hue should the modal be? (Only applies to the modal at the moment)
 if (typeof _bftn_options.modal_hue == "undefined")
-    _bftn_options.modal_hue = 165;
+    _bftn_options.modal_hue = 205;
 
 /**
 --------------------------------------------------------------------------------
@@ -88,7 +88,8 @@ var _bftn_animations = {
 			modalAnimation: 'modal',
 			skipEmailSignup: false,
 			skipCallTool: false,
-			fastAnimation: false
+			fastAnimation: false,
+			boxUnchecked: false
 		},
 
 		// init copies the _bftn_options properties over the default options
