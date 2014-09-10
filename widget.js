@@ -81,29 +81,14 @@ var _bftn_animations = {
 
 		// Default options: Override these with _bftn_options object (see above)
 		options: {
-<<<<<<< HEAD
-			modalAnimation: 'modal'
-		},
-
-		// preload: [
-		// 	'envelope.png',
-		// 	'envelope-hover.png',
-		// 	'field-gradient.png',
-		// 	'check-on.png',
-		// 	'check-off.png',
-		// 	'check-on-big.png',
-		// 	'check-off-big.png',
-		// 	'close.png'
-		// ],
-
-=======
 			modalAnimation: 'modal',
 			skipEmailSignup: false,
 			skipCallTool: false,
-			fastAnimation: false
+			fastAnimation: false,
+			boxUnchecked: false,
+			org: null
 		},
 
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
 			for (var k in options) this.options[k] = options[k];
@@ -141,11 +126,6 @@ var _bftn_animations = {
 			theme: 'light'
 		},
 
-<<<<<<< HEAD
-		// preload: [],
-
-=======
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
 			for (var k in options) this.options[k] = options[k];
@@ -174,8 +154,7 @@ var _bftn_animations = {
 			// otherwise it will be fixed to the top / bottom
 			var minFloatWidth = this.options.width-1;
 
-			var css = '
-				#_bftn_iframe { \
+			var css = '#_bftn_iframe { \
 					position: fixed; '+pos+' \
 					width: '+this.options.width+'px; \
 					height: '+this.options.height+'px; \
@@ -329,61 +308,29 @@ var ready = function() {
 		}
 
 		// Only show on September 10th 2014.
-		// JL NOTE ~ Disabled during development
-		var date = new Date();
-		var now = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate();
-		if (now !== '2014/9/10') {
+		// JL HACK ~ remove before the end of September >_>
+		if (new Date().getDate() < 10) {
 			return;
 		}
 	}
 
 	_bftn_util.setCookie('_BFTN_WIDGET_SHOWN', 'true', 365);
 
+	// JL HACK ~ Force iPhone / iPod to show banner while we fix issues
+	if(/(iPhone|iPod)/g.test(navigator.userAgent))
+		_bftn_options.animation = 'banner';
+
 	if (typeof _bftn_animations[_bftn_options.animation] == "undefined")
 		return _bftn_util.log('Animation undefined: '+_bftn_options.animation);
 
 	var animation = _bftn_animations[_bftn_options.animation];
 
-	// var images = new Array()
-	// var preloaded = 0;
+	var images = new Array()
+	var preloaded = 0;
 
-<<<<<<< HEAD
-	var beginAnimation = function() {
-		setTimeout(function() {
-			animation.init(_bftn_options).start();
-		}, _bftn_options.delay);
-	}
-
-	// if (typeof animation.preload != "undefined" && animation.preload.length)
-	// {
-	// 	for (i = 0; i < animation.preload.length; i++) {
-
-	// 		var src = animation.preload[i];
-
-	// 		images[i] = new Image()
-	// 		images[i].src = _bftn_options.iframe_base_path+'/images/'+src;
-	// 		images[i].onload = function() {
-	// 			preloaded++;
-	// 			_bftn_util.log('Preloaded ' + preloaded + ' images.');
-	// 			if (preloaded == images.length)
-	// 			{
-	// 				_bftn_util.log('DONE PRELOADING IMAGES.')
-	// 				_bftn_util.log('Animate in '+_bftn_options.delay+' ms');
-
-	// 				beginAnimation();
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// else	// no preload, just start the animation
-	// {
-		beginAnimation();
-	// }
-=======
 	setTimeout(function() {
 		animation.init(_bftn_options).start();
 	}, _bftn_options.delay);
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 }
 
 // Wait for DOM content to load.

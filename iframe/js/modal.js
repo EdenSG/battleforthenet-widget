@@ -26,28 +26,24 @@ var animations = {
     modal: {
         options: {
             debug: false,
-<<<<<<< HEAD
-        },
-=======
             skipEmailSignup: false,
             skipCallTool: false,
-            fastAnimation: false
+            fastAnimation: false,
+            boxUnchecked: false,
+            org: null
         },
 
         // If international, phone call functionality is disallowed
         phoneCallAllowed: true,
         zipcode: null,
-        org: 'fftf',
+        default_org: 'fftf',
 
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
         init: function(options) {
             for (var k in options) this.options[k] = options[k];
             return this;
         },
         start: function() {
 
-<<<<<<< HEAD
-=======
             if (this.options.skipEmailSignup)
             {
                 $('#direct_call').show();
@@ -57,6 +53,10 @@ var animations = {
             if (this.options.skipCallTool)
                 this.phoneCallAllowed = false;
 
+            if (this.options.boxUnchecked)
+                $('#opt-in').attr('checked', false);
+
+            // ------------------------------ Optimizely test vvv
             if (this.options.fastAnimation || document.fastForwardAnimation)
             {
                 $('body').addClass('fast-animation');
@@ -67,20 +67,32 @@ var animations = {
                 setTimeout(stupidIEZoomFix, 2250);
             }
 
-            // Optimizely test
+            // Optimizely test vvv
             if (document.showCTATextImmediately)
             {
                 $('#header h1').css('opacity', 0);
                 $('#header .cta').css('opacity', 1);
             }
 
-            if (Math.random() < 0.20) {
-                $('#fftf_disclosure').hide();
-                $('#fp_disclosure').show();
-                this.org = 'fp';
+            // Optimizely test vvv
+            this.optimizelyTextAB();
+
+            // If no org is set, then 16% chance of free press
+            if (!this.options.org && Math.random() < 0.16) {
+                this.options.org = 'fp';
             }
 
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
+            if (this.options.org == 'fp')
+            {
+                $('#fftf_disclosure').hide();
+                $('#fp_disclosure').show();
+            }
+            else if (this.options.org == 'dp')
+            {
+                $('#fftf_disclosure').hide();
+                $('#dp_disclosure').show();
+            }
+
             $('a.close').click(function(e) {
                 e.preventDefault();
                 $('body').addClass('closed');
@@ -90,7 +102,7 @@ var animations = {
                 }, 750);
             });
 
-            $('a.read').click(function(e) {
+            $('a.letter').click(function(e) {
                 e.preventDefault();
                 $('#overlay').css('display', 'block');
                 setTimeout(function() {
@@ -104,18 +116,42 @@ var animations = {
 
                 setTimeout(function() {
                     $('#overlay').css('display', 'none');
-                }, 1000);
+                }, 750);
             });
+
+            $('a#cantcall').click(function(e) {
+                e.preventDefault();
+                this.showFinal()
+            }.bind(this));
 
             $("form[name=petition]").submit(function(e) {
                 e.preventDefault();
                 if (this.postUser($(this))) {
                     
                     $("input:not([type=image],[type=button],[type=submit])").val('');
-                    this.showFinal();
+
+                    if (this.phoneCallAllowed)
+                        this.showPhoneCall();
+                    else
+                        this.showFinal();
                     
                 } else {
                     // alert('Please complete the rest of the form. Thanks!');
+                }
+            }.bind(this));
+
+            $("form[name=direct_call]").submit(function(e) {
+                e.preventDefault();
+                var phone = this.validatePhone($('#phone_front').val());
+
+                if (!phone)
+                {
+                    $('#phone_front').addClass('error');
+                }
+                else
+                {
+                    this.placePhonecall(phone);
+                    this.showFinalWithCallInstructions();
                 }
             }.bind(this));
 
@@ -125,6 +161,46 @@ var animations = {
 
             $('a.twitter').click(function(e) {
                 trackLeaderboardStat({stat: 'share', data: 'twitter'});
+            });
+
+            $('#call').click(function(e) {
+                e.preventDefault();
+
+                var phone = this.validatePhone($('#phone').val());
+
+                if (!phone)
+                    return $('#phone').addClass('error');
+
+                $('#call').attr('disabled', true);
+                $('#phone').attr('disabled', true);
+
+                this.placePhonecall(phone);
+
+                setTimeout(function() {
+                    this.showFinalWithCallInstructions();
+                }.bind(this), 1000);
+            }.bind(this));
+
+            $.ajax({
+                url: '//fftf-geocoder.herokuapp.com/',
+                dataType: 'json',
+                type: 'get',
+                success: function(data) {
+                    if (data.country && data.country.iso_code)
+                    {
+                        $('#country').val(data.country.iso_code);
+                        if (data.country.iso_code != "US")
+                        {
+                            this.phoneCallAllowed = false;
+
+                            if (this.options.skipEmailSignup)
+                            {
+                                // Nothing to do. Close the modal now.
+                                sendMessage('stop');
+                            }
+                        }
+                    }
+                }.bind(this)
             });
         },
         log: function() {
@@ -161,24 +237,27 @@ var animations = {
             });
 
             if (fail)
-                return false;
+                return alert('Please enter your info so we can sign the letter.');
+
+            this.zipcode = $('#zip').val();
+            var regex = /^\d{5}$/;
+            
+            if (!regex.test(this.zipcode))
+                this.phoneCallAllowed = false;
+
 
             // doc['action_comment'] = $("[name=action_comment]").val();
-<<<<<<< HEAD
-            doc['action_comment'] = $("JL-TBD").val();  // JL HACK
-            doc['country'] = 'US';                      // JL HACK
-
-            
-=======
             doc['action_comment'] = '';  // JL HACK
             doc['country'] = $('#country').val();
 
             if ($('#opt-in').is(':checked') == false)
                 doc['opt_out'] = true;
 
-            doc['org'] = this.org;
+            if (this.options.org)
+                doc['org'] = this.options.org;
+            else
+                doc['org'] = this.default_org;
 
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
             $.ajax({
                 url: "https://queue.battleforthenet.com/submit",
                 // url: "http://debbie:3019/submit",    // JL TEST ~
@@ -196,8 +275,6 @@ var animations = {
             return true;
         },
 
-<<<<<<< HEAD
-=======
         trackOptimizely: function(ev) {
             window['optimizely'] = window['optimizely'] || [];
             window.optimizely.push(["trackEvent", ev]);
@@ -248,17 +325,85 @@ var animations = {
             this.trackOptimizely('call_congress');
         },
 
->>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
         showFinal: function() {
             $('#step1').addClass('hidden');
             $('#header').addClass('hidden');
+            $('#stepCall').css('opacity', 0);
             setTimeout(function() {
-                $('#step1').css('visibility', 'hidden')
+                $('#step1').css('visibility', 'hidden');
+                $('#stepCall').css('visibility', 'hidden');
             }, 1000);
             $('#stepFinal').show();
             setTimeout(function() {
-                $('#stepFinal').css('opacity', 1)
+                $('#stepFinal').css('opacity', 1);
             }, 10);
+        },
+
+        showPhoneCall: function() {
+            $('#step1').addClass('hidden');
+            $('#header').addClass('hidden');
+            setTimeout(function() {
+                $('#step1').css('visibility', 'hidden');
+            }, 1000);
+            $('#stepCall').show();
+            setTimeout(function() {
+                $('#stepCall').css('opacity', 1);
+            }, 10);
+        },
+
+        optimizelyTextAB: function() {
+
+            // JL NOTE ~ disabled
+            return false;
+
+            var textVariation = null;
+
+            if (document.textVariation)
+                textVariation = document.textVariation
+
+            var showVariation = function(headline, ctaTop, ctaBottom) {
+                $('#header h1').html(headline);
+                $('#header .cta p em').html(ctaTop);
+                $('#header .cta p strong').html(ctaBottom);
+            };
+
+            switch (textVariation) {
+
+                case 'variation1':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Big ISPs want the power to slow (and break!) sites like ours.',
+                        'Tell lawmakers: &ldquo;Stop discrimination. Defend net neutrality.&rdquo;'
+                    );
+                    break;
+
+                case 'variation2':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Big ISPs want the power to slow (and break!) sites like ours.',
+                        'Don\'t let them destroy the best parts of the Internet. Sign now!'
+                    );
+                    break;
+
+                case 'variation3':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Comcast wants the power to slow (and break!) any website.',
+                        'Only you can stop them. Please, sign this letter.'
+                    );
+                    break;
+
+                case 'variation4':
+                    showVariation(
+                        '<em>If this site was still loading,</em> would you still be here?',
+                        'Cable giants want the power to slow (and break!) sites like ours.',
+                        'Tell lawmakers: &ldquo;Stop discrimination. Defend net neutrality.&rdquo;'
+                    );
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }
@@ -274,15 +419,26 @@ $(document).ready(function() {
         $('#letter').css('opacity', 1);
     }, 1000);
 
-    if (window.location.href.indexOf('EMBED') != -1) {
+    var loc = window.location.href;
+
+    if (loc.indexOf('EMBED') != -1) {
 
         document.body.className = 'embedded';
 
-        if (window.location.href.indexOf('NOCALL') != -1)
+        if (loc.indexOf('NOCALL') != -1)
             animations.modal.options.skipCallTool = true; 
 
-        if (window.location.href.indexOf('NOEMAIL') != -1)
-            animations.modal.options.skipEmailSignupp = true; 
+        if (loc.indexOf('NOEMAIL') != -1)
+            animations.modal.options.skipEmailSignup = true;
+
+        if (loc.indexOf('UNCHECK') != -1)
+            animations.modal.options.boxUnchecked = true;
+
+        if (loc.indexOf('DP') != -1)
+            animations.modal.options.org = 'dp';
+
+        if (loc.indexOf('FP') != -1)
+            animations.modal.options.org = 'fp'; 
                
         animations.modal.options.fastAnimation = true;
         animations.modal.start(); 
