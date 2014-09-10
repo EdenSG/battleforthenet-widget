@@ -81,6 +81,7 @@ var _bftn_animations = {
 
 		// Default options: Override these with _bftn_options object (see above)
 		options: {
+<<<<<<< HEAD
 			modalAnimation: 'modal'
 		},
 
@@ -95,6 +96,14 @@ var _bftn_animations = {
 		// 	'close.png'
 		// ],
 
+=======
+			modalAnimation: 'modal',
+			skipEmailSignup: false,
+			skipCallTool: false,
+			fastAnimation: false
+		},
+
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
 			for (var k in options) this.options[k] = options[k];
@@ -132,8 +141,11 @@ var _bftn_animations = {
 			theme: 'light'
 		},
 
+<<<<<<< HEAD
 		// preload: [],
 
+=======
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 		// init copies the _bftn_options properties over the default options
 		init: function(options) {
 			for (var k in options) this.options[k] = options[k];
@@ -335,6 +347,7 @@ var ready = function() {
 	// var images = new Array()
 	// var preloaded = 0;
 
+<<<<<<< HEAD
 	var beginAnimation = function() {
 		setTimeout(function() {
 			animation.init(_bftn_options).start();
@@ -366,6 +379,11 @@ var ready = function() {
 	// {
 		beginAnimation();
 	// }
+=======
+	setTimeout(function() {
+		animation.init(_bftn_options).start();
+	}, _bftn_options.delay);
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
 }
 
 // Wait for DOM content to load.

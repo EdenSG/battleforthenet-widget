@@ -26,13 +26,61 @@ var animations = {
     modal: {
         options: {
             debug: false,
+<<<<<<< HEAD
         },
+=======
+            skipEmailSignup: false,
+            skipCallTool: false,
+            fastAnimation: false
+        },
+
+        // If international, phone call functionality is disallowed
+        phoneCallAllowed: true,
+        zipcode: null,
+        org: 'fftf',
+
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
         init: function(options) {
             for (var k in options) this.options[k] = options[k];
             return this;
         },
         start: function() {
 
+<<<<<<< HEAD
+=======
+            if (this.options.skipEmailSignup)
+            {
+                $('#direct_call').show();
+                $('#petition').hide();
+                $('.bottom-link').hide();
+            }
+            if (this.options.skipCallTool)
+                this.phoneCallAllowed = false;
+
+            if (this.options.fastAnimation || document.fastForwardAnimation)
+            {
+                $('body').addClass('fast-animation');
+                setTimeout(stupidIEZoomFix, 10);
+            }
+            else
+            {
+                setTimeout(stupidIEZoomFix, 2250);
+            }
+
+            // Optimizely test
+            if (document.showCTATextImmediately)
+            {
+                $('#header h1').css('opacity', 0);
+                $('#header .cta').css('opacity', 1);
+            }
+
+            if (Math.random() < 0.20) {
+                $('#fftf_disclosure').hide();
+                $('#fp_disclosure').show();
+                this.org = 'fp';
+            }
+
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
             $('a.close').click(function(e) {
                 e.preventDefault();
                 $('body').addClass('closed');
@@ -116,12 +164,23 @@ var animations = {
                 return false;
 
             // doc['action_comment'] = $("[name=action_comment]").val();
+<<<<<<< HEAD
             doc['action_comment'] = $("JL-TBD").val();  // JL HACK
             doc['country'] = 'US';                      // JL HACK
 
             
+=======
+            doc['action_comment'] = '';  // JL HACK
+            doc['country'] = $('#country').val();
+
+            if ($('#opt-in').is(':checked') == false)
+                doc['opt_out'] = true;
+
+            doc['org'] = this.org;
+
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
             $.ajax({
-                url: "https://api.battleforthenet.com/submit",
+                url: "https://queue.battleforthenet.com/submit",
                 // url: "http://debbie:3019/submit",    // JL TEST ~
                 type: "post",
                 dataType: "json",
@@ -132,9 +191,64 @@ var animations = {
             });
             trackLeaderboardStat({stat: 'submit_form'});
 
+            this.trackOptimizely('fcc_post');
+
             return true;
         },
 
+<<<<<<< HEAD
+=======
+        trackOptimizely: function(ev) {
+            window['optimizely'] = window['optimizely'] || [];
+            window.optimizely.push(["trackEvent", ev]);
+        },
+
+        showFinalWithCallInstructions: function() {
+            $('#stepFinal .defaultText').hide();
+            $('#stepFinal .altText').show();
+            this.showFinal();
+        },
+
+        validatePhone: function(num) {
+            num = num.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, '');
+            num = num.replace("+", "").replace(/\-/g, '');
+
+            if (num.charAt(0) == "1")
+                num = num.substr(1);
+
+            if (num.length != 10)
+                return false;
+
+            return num;
+        },
+
+        placePhonecall: function(num) {
+            $('#call').html('Calling...');
+
+            var data = {
+                campaignId: 'battleforthenet',
+                userPhone: num,
+                fftfCampaign: 'internetslowdown',
+                fftfReferer: host,
+                fftfSession: session
+            }
+            if (this.zipcode)
+                data.zipcode = this.zipcode;
+
+            $.ajax({
+                url: 'https://call-congress.fightforthefuture.org/create',
+                type: "get",
+                dataType: "json",
+                data: data,
+                success: function(res) {
+                    console.log('Placed call-congress call: ', res);
+                }
+            });
+
+            this.trackOptimizely('call_congress');
+        },
+
+>>>>>>> 25f9f06c9609f2458a1403cb25ce3d653f02ba46
         showFinal: function() {
             $('#step1').addClass('hidden');
             $('#header').addClass('hidden');
@@ -149,21 +263,33 @@ var animations = {
     }
 }
 
-setTimeout(function() {
+$(document).ready(function() {
+
     $('#header h1').html($('h1.headline').html());
     $('#header .cta p').html($('p.cta-hidden-trust-me').html());
-}, 2000);
-setTimeout(function() {
-    $('#header .cta').css('height', $('#header').outerHeight()+'px');
-    $('#letter').css('height', $('#modal').outerHeight()+'px');
-    $('#letter').css('opacity', 1);
-}, 3000);
 
-if (window.location.href.indexOf('EMBED') != -1) 
-{
-    document.body.className = 'embedded';
-    animations.modal.start(); 
-}
+    setTimeout(function() {
+        $('#header .cta').css('height', $('#header').outerHeight()+'px');
+        $('#letter').css('height', $('#modal').outerHeight()+'px');
+        $('#letter').css('opacity', 1);
+    }, 1000);
+
+    if (window.location.href.indexOf('EMBED') != -1) {
+
+        document.body.className = 'embedded';
+
+        if (window.location.href.indexOf('NOCALL') != -1)
+            animations.modal.options.skipCallTool = true; 
+
+        if (window.location.href.indexOf('NOEMAIL') != -1)
+            animations.modal.options.skipEmailSignupp = true; 
+               
+        animations.modal.options.fastAnimation = true;
+        animations.modal.start(); 
+    } 
+});
+
+
 
 /**
  *  -------------------------- OMG ---------------------------------------------
@@ -171,9 +297,7 @@ if (window.location.href.indexOf('EMBED') != -1)
  *  -------------------------- OMG ---------------------------------------------
  */
 
-setTimeout(function() {
-    stupidIEZoomFix();
-}, 2250);
+
 
 function stupidIEZoomFix() {
     if (ieVersion) {
