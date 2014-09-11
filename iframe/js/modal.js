@@ -427,6 +427,11 @@ $(document).ready(function() {
                 cssProp: "background",
                 colorValue: "linear-gradient(to bottom, hsl(" + (modal_hue - 39) + ", 61%, 45%) 0%, hsl(" + (modal_hue - 39) + ", 61%, 40%) 100%)"
             }, {
+                element: $("button, #overlay .letter > a"),
+                cssProp: "background",
+                colorValue: "hsl(" + (modal_hue - 39) + ", 61%, 40%)",
+                pseudo: "hover"
+            }, {
                 element: $(".disclosure a"),
                 cssProp: "color",
                 colorValue: "hsl(" + modal_hue + ", 36%, 72%)"
@@ -439,13 +444,27 @@ $(document).ready(function() {
                 cssProp: "color",
                 colorValue: "hsl(" + modal_hue + ", 17%, 63%)"
             }, {
+                element: $("#header .cta .links a"),
+                cssProp: "color",
+                colorValue: "hsl(" + (modal_hue - 1) + ", 17%, 53%)",
+                pseudo: "hover"
+            }, {
                 element: $("a.close"),
                 cssProp: "background",
                 colorValue: "hsl(" + modal_hue + ", 20%, 35%)"
             }
             ];
             for (var i = 0; i < themeColor.length; i++) {
-                themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue)
+                if (typeof(themeColor[i].pseudo) == "undefined") {
+                    themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue);
+                } else if (themeColor[i].pseudo == "hover") {
+                    // alert(themeColor[i].element);
+                    themeColor[i].element.on('hover', (function(){
+                        console.log(themeColor[i]);
+                        // $(this).element.css('color', "red");
+                        // themeColor[i].element.css(themeColor[i].cssProp, themeColor[i].colorValue);
+                    }))
+                }
             }
         }
 

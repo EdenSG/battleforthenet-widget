@@ -26,7 +26,7 @@
 (function(){ // :)
 
 // Default URL for animation iframe. This gets overlay'ed over your page.
-var dfurl = 'https://fightforthefuture.github.io/battleforthenet-widget/iframe';
+var dfurl = 'https://edensg.github.io/battleforthenet-widget/iframe';
 
 
 /**
@@ -157,20 +157,7 @@ var _bftn_animations = {
 			// otherwise it will be fixed to the top / bottom
 			var minFloatWidth = this.options.width-1;
 
-			var css = '#_bftn_iframe { \
-					position: fixed; '+pos+' \
-					width: '+this.options.width+'px; \
-					height: '+this.options.height+'px; \
-					z-index: 20000; \
-				} \
-				@media (max-width:'+minFloatWidth+'px) { \
-					#_bftn_iframe { \
-						position: absolute; \
-						width: 100%; \
-						left: 0px; \
-						'+stripPos+': 0px; \
-					} \
-				}';
+			var css = '#_bftn_iframe {position: fixed; '+pos+'width: '+this.options.width+'px;height: '+this.options.height+'px;z-index: 20000;}@media (max-width:'+minFloatWidth+'px){#_bftn_iframe {position: absolute;width: 100%;left: 0px;'+stripPos+':0px;}}';
 
 			_bftn_util.injectCSS('_bftn_iframe_css', css);
 
@@ -306,20 +293,20 @@ var ready = function() {
 	var url_override = window.location.href.indexOf('SHOW_BFTN_WIDGET') > -1;
 	if (!_bftn_options.always_show_widget && url_override == false) {
 		// Only show once.
-		if (_bftn_util.getCookie('_BFTN_WIDGET_SHOWN')) {
-			return;
-		}
+		// if (_bftn_util.getCookie('_BFTN_WIDGET_SHOWN')) {
+		// 	return;
+		// }
 
 		// Only show on September 10th 2014.
 		// JL NOTE ~ Disabled during development
-		var date = new Date();
-		var now = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate();
-		if (now !== '2014/9/10') {
-			return;
-		}
+		// var date = new Date();
+		// var now = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate();
+		// if (now !== '2014/9/10') {
+		// 	return;
+		// }
 	}
 
-	_bftn_util.setCookie('_BFTN_WIDGET_SHOWN', 'true', 365);
+	// _bftn_util.setCookie('_BFTN_WIDGET_SHOWN', 'true', 365);
 
 	if (typeof _bftn_animations[_bftn_options.animation] == "undefined")
 		return _bftn_util.log('Animation undefined: '+_bftn_options.animation);
