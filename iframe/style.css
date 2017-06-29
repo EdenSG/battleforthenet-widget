@@ -213,7 +213,7 @@ body.slow #logos img {
 .modal {
   animation-duration: 1s;
   animation-name: modal;
-  animation-timing-function: ease-out;
+  animation-timing-function: cubic-bezier(.1, .9, 0, 1);
 }
 
 /* Disable animations if user prefers */
